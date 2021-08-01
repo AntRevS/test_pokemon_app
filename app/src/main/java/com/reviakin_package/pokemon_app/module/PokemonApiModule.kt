@@ -1,5 +1,7 @@
 package com.reviakin_package.pokemon_app.module
 
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.reviakin_package.pokemon_app.app.AppScope
 import com.reviakin_package.pokemon_app.pokemonapi.PokemonApi
 import dagger.Module
 import dagger.Provides
@@ -11,17 +13,17 @@ import javax.inject.Singleton
 @Module
 class PokemonApiModule {
 
-    @Singleton
+    @AppScope
     @Provides
     fun provideRetrofit(): Retrofit{
         return Retrofit.Builder()
             .baseUrl("https://pokeapi.co/api/v2/")
             .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addCallAdapterFactory(CoroutineCallAdapterFactory.invoke())
             .build()
     }
 
-    @Singleton
+    @AppScope
     @Provides
     fun providePokemonApi(retrofit: Retrofit): PokemonApi{
         return retrofit.create(PokemonApi::class.java)

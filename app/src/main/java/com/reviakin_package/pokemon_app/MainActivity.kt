@@ -2,6 +2,7 @@ package com.reviakin_package.pokemon_app
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.reviakin_package.pokemon_app.app.App
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -3,6 +3,7 @@ package com.reviakin_package.pokemon_app.app
 import android.app.Application
 import com.reviakin_package.pokemon_app.component.AppComponent
 import com.reviakin_package.pokemon_app.component.DaggerAppComponent
+import com.reviakin_package.pokemon_app.module.ApplicationModule
 
 class App : Application() {
 
@@ -22,6 +23,6 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        appComponent = DaggerAppComponent.create()
+        appComponent = DaggerAppComponent.builder().applicationModule(ApplicationModule(applicationContext())).build()
     }
 }
