@@ -1,17 +1,13 @@
-package com.reviakin_package.pokemon_app
+package com.reviakin_package.pokemon_app.worker
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.FileUtils
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import okhttp3.ResponseBody
 import java.io.*
-import java.net.MalformedURLException
 import java.net.URL
-import java.util.concurrent.TimeUnit
 
 
 class DownloadImageWorker(context: Context, val workerParams: WorkerParameters) : Worker(context,

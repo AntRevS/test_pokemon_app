@@ -1,12 +1,15 @@
-package com.reviakin_package.pokemon_app
+package com.reviakin_package.pokemon_app.fragment
 
 import android.os.Bundle
+import android.text.Editable
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.lifecycle.Observer
+import com.reviakin_package.pokemon_app.mvvm.viewmodel.FindViewModel
+import com.reviakin_package.pokemon_app.R
 import com.reviakin_package.pokemon_app.helper.LoadingState
 import com.reviakin_package.pokemon_app.app.App
 import com.reviakin_package.pokemon_app.component.AppComponent
@@ -95,7 +98,9 @@ class FindFragment : Fragment(), View.OnClickListener {
         if(v != null){
             when(v.id){
                 R.id.btn_find -> {
-                    viewModel.fetchFindData(mEditTextFind.text.toString())
+                    if(!mEditTextFind.text.toString().trim().equals("")){
+                        viewModel.fetchFindData(mEditTextFind.text.toString())
+                    }
                 }
                 R.id.btn_save -> {
                     if(mCurrentPokemon != null) {

@@ -1,4 +1,4 @@
-package com.reviakin_package.pokemon_app
+package com.reviakin_package.pokemon_app.mvvm.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

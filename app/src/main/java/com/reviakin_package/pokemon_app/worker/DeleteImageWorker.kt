@@ -1,4 +1,4 @@
-package com.reviakin_package.pokemon_app
+package com.reviakin_package.pokemon_app.worker
 
 import android.content.Context
 import android.util.Log

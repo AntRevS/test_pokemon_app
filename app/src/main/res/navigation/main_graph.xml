@@ -7,7 +7,12 @@
 
     <fragment
         android:id="@+id/findFragment"
-        android:name="com.reviakin_package.pokemon_app.FindFragment"
+        android:name="com.reviakin_package.pokemon_app.fragment.FindFragment"
         android:label="find_fragment"
         tools:layout="@layout/find_fragment" />
+    <fragment
+        android:id="@+id/randomFindFragment"
+        android:name="com.reviakin_package.pokemon_app.RandomFindFragment"
+        android:label="random_find_fragment"
+        tools:layout="@layout/random_find_fragment" />
 </navigation>

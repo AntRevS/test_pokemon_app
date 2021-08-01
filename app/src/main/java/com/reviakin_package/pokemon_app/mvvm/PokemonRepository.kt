@@ -4,8 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.reviakin_package.pokemon_app.DeleteImageWorker
-import com.reviakin_package.pokemon_app.DownloadImageWorker
+import com.reviakin_package.pokemon_app.worker.DeleteImageWorker
+import com.reviakin_package.pokemon_app.worker.DownloadImageWorker
 import com.reviakin_package.pokemon_app.database.dao.PokemonDao
 import com.reviakin_package.pokemon_app.database.entity.PokemonEntity
 import com.reviakin_package.pokemon_app.pojo.PokemonUnit
