@@ -12,7 +12,7 @@
         tools:layout="@layout/find_fragment" />
     <fragment
         android:id="@+id/randomFindFragment"
-        android:name="com.reviakin_package.pokemon_app.RandomFindFragment"
+        android:name="com.reviakin_package.pokemon_app.fragment.RandomFindFragment"
         android:label="random_find_fragment"
         tools:layout="@layout/random_find_fragment" />
 </navigation>

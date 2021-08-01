@@ -1,6 +1,5 @@
-package com.reviakin_package.pokemon_app
+package com.reviakin_package.pokemon_app.fragment
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.lifecycle.Observer
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.reviakin_package.pokemon_app.R
 import com.reviakin_package.pokemon_app.app.App
 import com.reviakin_package.pokemon_app.component.AppComponent
 import com.reviakin_package.pokemon_app.helper.LoadingState
