@@ -21,6 +21,7 @@ class FindViewModel(
 
     val dataFind = repository.dataFind
     val dataExist = repository.dataCurrentExist
+    val dataSave = repository.dataSave
 
     fun fetchFindData(name: String){
         viewModelScope.launch {
@@ -43,10 +44,10 @@ class FindViewModel(
         }
     }
 
-    fun deletePokemon(pokemonUnit: PokemonUnit){
+    fun deletePokemon(name: String){
         viewModelScope.launch {
             try{
-                repository.deletePokemonData(pokemonUnit)
+                repository.deletePokemonData(name)
             }catch (e: Exception){
 
             }

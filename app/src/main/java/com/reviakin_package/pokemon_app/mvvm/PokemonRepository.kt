@@ -61,9 +61,9 @@ class PokemonRepository(
         }
     }
 
-    suspend fun deletePokemonData(pokemonUnit: PokemonUnit) = coroutineScope {
+    suspend fun deletePokemonData(name: String) = coroutineScope {
         withContext(Dispatchers.IO){
-            var path = AppCacheUtil.getPath() + pokemonUnit.name + ".png"
+            var path = AppCacheUtil.getPath() + name + ".png"
             var requestData = Data.Builder()
                 .putString(DeleteImageWorker.INPUT_PATH, path)
                 .build()
@@ -72,9 +72,9 @@ class PokemonRepository(
                 .build()
             WorkManager.getInstance().enqueue(deleteImageRequest)
 
-            pokemonDao.deleteByName(pokemonUnit.name)
+            pokemonDao.deleteByName(name)
 
-            checkExistPokemonData(pokemonUnit.name)
+            checkExistPokemonData(name)
         }
     }
 

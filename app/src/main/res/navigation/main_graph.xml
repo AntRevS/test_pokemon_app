@@ -15,4 +15,9 @@
         android:name="com.reviakin_package.pokemon_app.fragment.RandomFindFragment"
         android:label="random_find_fragment"
         tools:layout="@layout/random_find_fragment" />
+    <fragment
+        android:id="@+id/savedFragment"
+        android:name="com.reviakin_package.pokemon_app.fragment.SavedFragment"
+        android:label="saved_fragment"
+        tools:layout="@layout/saved_fragment" />
 </navigation>

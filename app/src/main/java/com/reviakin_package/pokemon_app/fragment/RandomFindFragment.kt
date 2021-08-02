@@ -105,7 +105,7 @@ class RandomFindFragment : Fragment(), View.OnClickListener {
                     if(mCurrentPokemon != null) {
                         when(mSavedPokemon){
                             true -> {
-                                viewModel.deletePokemon(mCurrentPokemon!!)
+                                viewModel.deletePokemon(mCurrentPokemon!!.name)
                             }
                             false -> {
                                 viewModel.savePokemon(mCurrentPokemon!!)
