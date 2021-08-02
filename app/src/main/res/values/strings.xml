@@ -3,4 +3,8 @@
 
     <string name="save">Save</string>
     <string name="saved">Saved</string>
+
+    <string name="find">Find</string>
+    <string name="random">Random</string>
+    <string name="favorit">Favorites </string>
 </resources>

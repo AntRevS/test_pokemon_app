@@ -58,7 +58,7 @@ class RandomFindFragment : Fragment(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        viewModel.fetchFindData((0..898).random().toString())
+        //viewModel.fetchFindData((0..898).random().toString())
     }
 
     private fun init(){

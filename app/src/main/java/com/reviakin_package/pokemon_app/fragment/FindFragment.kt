@@ -2,6 +2,7 @@ package com.reviakin_package.pokemon_app.fragment
 
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -117,6 +118,7 @@ class FindFragment : Fragment(), View.OnClickListener {
             }
         }
     }
+
 
     private var checkExistPokemonListener = object : Observer<Boolean>{
         override fun onChanged(t: Boolean?) {
