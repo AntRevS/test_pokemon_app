@@ -7,4 +7,6 @@
     <string name="find">Find</string>
     <string name="random">Random</string>
     <string name="favorit">Favorites </string>
+
+    <string name="back">&#5130;</string>
 </resources>

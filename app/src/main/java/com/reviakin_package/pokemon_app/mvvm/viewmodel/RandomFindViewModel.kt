@@ -1,6 +1,5 @@
 package com.reviakin_package.pokemon_app.mvvm.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,7 +11,7 @@ import com.reviakin_package.pokemon_app.pojo.PokemonUnit
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
-class FindViewModel(
+class RandomFindViewModel(
     private val repository: PokemonRepository
 ) : ViewModel() {
 
@@ -21,15 +20,14 @@ class FindViewModel(
     val loadingState: LiveData<LoadingState>
         get() = _loadingState
 
+    val dataFind = repository.dataFind
     val dataExist = repository.dataCurrentExist
 
-    val dataLastFind = repository.dataLastFind
-
-    fun fetchFindData(name: String){
+    fun fetchFindData(){
         viewModelScope.launch {
             try{
                 _loadingState.value = LoadingState.LOADING
-                repository.refreshFindData(name)
+                repository.refreshRandomFindData()
                 _loadingState.value = LoadingState.LOADED
             }catch (e: HttpException){
                 _loadingState.value = LoadingState.error(e.stackTraceToString())
@@ -37,21 +35,22 @@ class FindViewModel(
         }
     }
 
-    fun savePokemon(pokemonEntity: PokemonEntity){
+    fun savePokemon(pokemonUnit: PokemonUnit){
         viewModelScope.launch {
-            repository.addPokemonDataEntity(pokemonEntity)
+            try{
+                repository.addPokemonDataUnit(pokemonUnit)
+            }catch (e: Exception){
+            }
         }
     }
 
     fun deletePokemon(name: String){
         viewModelScope.launch {
-            repository.deletePokemonData(name)
-        }
-    }
+            try{
+                repository.deletePokemonData(name)
+            }catch (e: Exception){
 
-    fun cleanCache(){
-        viewModelScope.launch {
-            repository.cleanCache()
+            }
         }
     }
 }

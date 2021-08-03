@@ -20,22 +20,67 @@ class PokemonRepository(
     private val pokemonApi: PokemonApi
 ) {
 
+    val ID_LAST_FIND = 100000
+
     val dataSave = pokemonDao.getAllRows()
     val dataFind = MutableLiveData<PokemonUnit>()
-    val dataRandom = MutableLiveData<PokemonUnit>()
-
     val dataCurrentExist = MutableLiveData<Boolean>()
+
+    val dataLastFind = pokemonDao.getById(ID_LAST_FIND)
 
     suspend fun refreshFindData(name : String) = coroutineScope {
         withContext(Dispatchers.IO){
             var pokemon = pokemonApi.getPokemonByName(name).await()
+
+            checkExistPokemonData(pokemon.name)
+
+            var pokemonSafe = PokemonEntity(
+                pokemon.name,
+                pokemon.sprites.frontDefault,
+                pokemon.baseExperience,
+                pokemon.height,
+                pokemon.weight
+            )
+
+            pokemonSafe.id = ID_LAST_FIND
+
+            pokemonDao.insert(pokemonSafe)
+
+        }
+    }
+
+    suspend fun refreshRandomFindData() = coroutineScope {
+        withContext(Dispatchers.IO){
+            var pokemon = pokemonApi.getPokemonByName((0..898).random().toString()).await()
             dataFind.postValue(pokemon)
 
             checkExistPokemonData(pokemon.name)
         }
     }
 
-    suspend fun addPokemonData(pokemonUnit: PokemonUnit) = coroutineScope {
+    suspend fun addPokemonDataEntity(pokemonEntity: PokemonEntity) = coroutineScope {
+        withContext(Dispatchers.IO){
+            var path = AppCacheUtil.getPath() + pokemonEntity.name + ".png"
+            var requestData = Data.Builder()
+                .putString(DownloadImageWorker.INPUT_URL, pokemonEntity.icon)
+                .putString(DownloadImageWorker.INPUT_FILENAME, path)
+                .build()
+            var downloadImageRequest = OneTimeWorkRequest.Builder(DownloadImageWorker::class.java)
+                .setInputData(requestData)
+                .build()
+            WorkManager.getInstance().enqueue(downloadImageRequest)
+
+            pokemonEntity.icon = path
+
+            pokemonDao.insert(
+                pokemonEntity
+            )
+
+            checkExistPokemonData(pokemonEntity.name)
+        }
+    }
+
+    suspend fun addPokemonDataUnit(pokemonUnit: PokemonUnit) = coroutineScope {
         withContext(Dispatchers.IO){
             var path = AppCacheUtil.getPath() + pokemonUnit.name + ".png"
             var requestData = Data.Builder()
@@ -50,7 +95,7 @@ class PokemonRepository(
             pokemonDao.insert(
                 PokemonEntity(
                     pokemonUnit.name,
-                    path,
+                    pokemonUnit.sprites.frontDefault,
                     pokemonUnit.baseExperience,
                     pokemonUnit.height,
                     pokemonUnit.weight
@@ -75,6 +120,12 @@ class PokemonRepository(
             pokemonDao.deleteByName(name)
 
             checkExistPokemonData(name)
+        }
+    }
+
+    suspend fun cleanCache() = coroutineScope {
+        withContext(Dispatchers.IO){
+            pokemonDao.deleteById(ID_LAST_FIND)
         }
     }
 

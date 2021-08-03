@@ -1,6 +1,8 @@
 package com.reviakin_package.pokemon_app.fragment
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,11 +12,14 @@ import androidx.lifecycle.Observer
 import com.reviakin_package.pokemon_app.R
 import com.reviakin_package.pokemon_app.app.App
 import com.reviakin_package.pokemon_app.component.AppComponent
+import com.reviakin_package.pokemon_app.fragment.callbacks.FragmentCallback
 import com.reviakin_package.pokemon_app.helper.LoadingState
 import com.reviakin_package.pokemon_app.mvvm.viewmodel.FindViewModel
+import com.reviakin_package.pokemon_app.mvvm.viewmodel.RandomFindViewModel
 import com.reviakin_package.pokemon_app.pojo.PokemonUnit
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import java.lang.ClassCastException
 
 class RandomFindFragment : Fragment(), View.OnClickListener {
 
@@ -28,6 +33,7 @@ class RandomFindFragment : Fragment(), View.OnClickListener {
     private lateinit var mProfileLayout: LinearLayout
     private lateinit var mProgressBar: ProgressBar
     private lateinit var mBtnRefresh: ImageButton
+    private lateinit var mBtnBack: Button
 
     private lateinit var mAppComponent: AppComponent
 
@@ -37,11 +43,13 @@ class RandomFindFragment : Fragment(), View.OnClickListener {
 
     private var mSavedPokemon = false
 
+    private lateinit var mNavigationListener: FragmentCallback.OnNavigateFromRandomFindFragment
+
     companion object {
         fun newInstance() = RandomFindFragment()
     }
 
-    private lateinit var viewModel: FindViewModel
+    private lateinit var viewModel: RandomFindViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,9 +64,18 @@ class RandomFindFragment : Fragment(), View.OnClickListener {
         init()
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try{
+            mNavigationListener = context as FragmentCallback.OnNavigateFromRandomFindFragment
+        }catch (e: ClassCastException){
+            throw ClassCastException(activity.toString() + " must implement OnNavigateFromRandomFindFragment");
+        }
+    }
+
     override fun onResume() {
         super.onResume()
-        //viewModel.fetchFindData((0..898).random().toString())
+        viewModel.fetchFindData()
     }
 
     private fun init(){
@@ -71,13 +88,14 @@ class RandomFindFragment : Fragment(), View.OnClickListener {
         mProfileLayout = mMainView.findViewById(R.id.profile_layout)
         mProgressBar = mMainView.findViewById(R.id.progress_bar)
         mBtnRefresh = mMainView.findViewById(R.id.btn_refresh)
+        mBtnBack = mMainView.findViewById(R.id.btn_back)
 
         mAppComponent = (requireActivity().applicationContext as App).appComponent
 
         viewModel = mAppComponent
-            .getViewModelComponent()
-            .getFindViewModel()
+            .getRandomFindViewModel()
 
+        mBtnBack.setOnClickListener(this)
         mBtnRefresh.setOnClickListener(this)
         mBtnSave.setOnClickListener(this)
 
@@ -99,7 +117,7 @@ class RandomFindFragment : Fragment(), View.OnClickListener {
         if(v != null){
             when(v.id){
                 R.id.btn_refresh -> {
-                    viewModel.fetchFindData((0..898).random().toString())
+                    viewModel.fetchFindData()
                 }
                 R.id.btn_save -> {
                     if(mCurrentPokemon != null) {
@@ -112,6 +130,9 @@ class RandomFindFragment : Fragment(), View.OnClickListener {
                             }
                         }
                     }
+                }
+                R.id.btn_back -> {
+                    mNavigationListener.onRandomFindFragmentBackClick()
                 }
             }
         }

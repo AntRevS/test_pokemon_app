@@ -1,24 +1,29 @@
 package com.reviakin_package.pokemon_app.fragment
 
+import android.content.Context
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.lifecycle.Observer
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.reviakin_package.pokemon_app.mvvm.viewmodel.FindViewModel
 import com.reviakin_package.pokemon_app.R
 import com.reviakin_package.pokemon_app.helper.LoadingState
 import com.reviakin_package.pokemon_app.app.App
 import com.reviakin_package.pokemon_app.component.AppComponent
+import com.reviakin_package.pokemon_app.database.entity.PokemonEntity
+import com.reviakin_package.pokemon_app.fragment.callbacks.FragmentCallback
 import com.reviakin_package.pokemon_app.pojo.PokemonUnit
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import java.lang.ClassCastException
 
-class FindFragment : Fragment(), View.OnClickListener {
+class FindFragment : Fragment(), View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var mEditTextFind: EditText
     private lateinit var mBtnFind: ImageButton
@@ -31,14 +36,17 @@ class FindFragment : Fragment(), View.OnClickListener {
     private lateinit var mPicasso: Picasso
     private lateinit var mProfileLayout: LinearLayout
     private lateinit var mProgressBar: ProgressBar
+    private lateinit var mBottomNavigationView: BottomNavigationView
 
     private lateinit var mAppComponent: AppComponent
 
     private lateinit var mMainView: View
 
-    private var mCurrentPokemon: PokemonUnit? = null
+    private var mCurrentPokemon: PokemonEntity? = null
 
     private var mSavedPokemon = false
+
+    private lateinit var mNavigationListener: FragmentCallback.OnNavigateFromFindFragment
 
     companion object {
         fun newInstance() = FindFragment()
@@ -52,6 +60,15 @@ class FindFragment : Fragment(), View.OnClickListener {
     ): View? {
         mMainView = inflater.inflate(R.layout.find_fragment, container, false)
         return mMainView
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try{
+            mNavigationListener = context as FragmentCallback.OnNavigateFromFindFragment
+        }catch (e: ClassCastException){
+            throw ClassCastException(activity.toString() + " must implement OnNavigateFromFindFragment");
+        }
     }
 
     override fun onStart() {
@@ -70,6 +87,9 @@ class FindFragment : Fragment(), View.OnClickListener {
         mBtnSave = mMainView.findViewById(R.id.btn_save)
         mProfileLayout = mMainView.findViewById(R.id.profile_layout)
         mProgressBar = mMainView.findViewById(R.id.progress_bar)
+        mBottomNavigationView = mMainView.findViewById(R.id.bottom_navigation)
+
+        mBottomNavigationView.setOnNavigationItemSelectedListener(this)
 
         mBtnFind.setOnClickListener(this)
         mBtnSave.setOnClickListener(this)
@@ -77,21 +97,20 @@ class FindFragment : Fragment(), View.OnClickListener {
         mAppComponent = (requireActivity().applicationContext as App).appComponent
 
         viewModel = mAppComponent
-            .getViewModelComponent()
             .getFindViewModel()
 
         viewModel.dataExist.observe(this, checkExistPokemonListener)
-        viewModel.dataFind.observe(this, findPokemonListener)
+        viewModel.dataLastFind.observe(this, findPokemonListener)
         viewModel.loadingState.observe(this, loadingStateListener)
         mPicasso = mAppComponent.getPicassoComponent().getPicasso()
     }
 
-    private fun showData(pokemonUnit: PokemonUnit){
-        mPicasso.load(pokemonUnit.sprites.frontDefault).into(mPokemonIcon)
-        mTvName.text = pokemonUnit.name
-        mTvHeight.text = pokemonUnit.height.toString()
-        mTvWeight.text = pokemonUnit.weight.toString()
-        mTvBaseExp.text = pokemonUnit.baseExperience.toString()
+    private fun showData(pokemonEntity: PokemonEntity){
+        mPicasso.load(pokemonEntity.icon).into(mPokemonIcon)
+        mTvName.text = pokemonEntity.name
+        mTvHeight.text = pokemonEntity.height.toString()
+        mTvWeight.text = pokemonEntity.weight.toString()
+        mTvBaseExp.text = pokemonEntity.baseExperience.toString()
     }
 
 
@@ -138,11 +157,12 @@ class FindFragment : Fragment(), View.OnClickListener {
 
     }
 
-    private var findPokemonListener = object : Observer<PokemonUnit>{
-        override fun onChanged(t: PokemonUnit?) {
+    private var findPokemonListener = object : Observer<PokemonEntity>{
+        override fun onChanged(t: PokemonEntity?) {
             if(t != null){
                 mCurrentPokemon = t
                 showData(t)
+                mProfileLayout.visibility = View.VISIBLE
             }
         }
     }
@@ -166,4 +186,20 @@ class FindFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
+        when(menuItem.itemId){
+            R.id.action_random -> {
+                mNavigationListener.onRandomFragmentNavigate()
+            }
+            R.id.action_favorites -> {
+                mNavigationListener.onSavedFragmentNavigate()
+            }
+        }
+        return false
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        viewModel.cleanCache()
+    }
 }

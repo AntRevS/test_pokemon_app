@@ -1,15 +1,13 @@
 package com.reviakin_package.pokemon_app.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,17 +16,24 @@ import com.reviakin_package.pokemon_app.adapter.PokemonRecycler
 import com.reviakin_package.pokemon_app.app.App
 import com.reviakin_package.pokemon_app.component.AppComponent
 import com.reviakin_package.pokemon_app.database.entity.PokemonEntity
+import com.reviakin_package.pokemon_app.fragment.callbacks.FragmentCallback
 import com.reviakin_package.pokemon_app.mvvm.viewmodel.FindViewModel
+import com.reviakin_package.pokemon_app.mvvm.viewmodel.SavedViewModel
 import com.squareup.picasso.Picasso
 import java.io.File
+import java.lang.ClassCastException
 
-class SavedFragment : Fragment(), Observer<List<PokemonEntity>>, PokemonRecycler.onLikeCLickListener{
+class SavedFragment : Fragment(), Observer<List<PokemonEntity>>, PokemonRecycler.onLikeCLickListener, View.OnClickListener{
 
-    private lateinit var viewModel : FindViewModel
+    private lateinit var viewModel : SavedViewModel
     private lateinit var mPokemonList : RecyclerView
+    private lateinit var mBtnBack: Button
     private lateinit var mMainView: View
 
+
     private lateinit var mAppComponent: AppComponent
+
+    private lateinit var mNavigationListener: FragmentCallback.OnNavigateFromSavedFragment
 
     companion object {
         fun newInstance() = SavedFragment()
@@ -42,19 +47,35 @@ class SavedFragment : Fragment(), Observer<List<PokemonEntity>>, PokemonRecycler
         return mMainView
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try{
+            mNavigationListener = context as FragmentCallback.OnNavigateFromSavedFragment
+        }catch (e: ClassCastException){
+            throw ClassCastException(activity.toString() + " must implement OnNavigateFromSavedFragment");
+        }
+    }
+
     override fun onStart() {
         super.onStart()
         init()
     }
 
     private fun init(){
+        mBtnBack = mMainView.findViewById(R.id.btn_back)
         mPokemonList = mMainView.findViewById(R.id.pokemon_list)
         mPokemonList.layoutManager = LinearLayoutManager(requireActivity())
 
         mAppComponent = (requireActivity().applicationContext as App).appComponent
 
-        viewModel = mAppComponent.getViewModelComponent().getFindViewModel()
+        mBtnBack.setOnClickListener(this)
+
+        viewModel = mAppComponent.getSavedViewModel()
         viewModel.dataSave.observe(this, this)
+    }
+
+    override fun onClick(v: View?) {
+        mNavigationListener.onSavedFragmentBackClick()
     }
 
     override fun onChanged(t: List<PokemonEntity>?) {
